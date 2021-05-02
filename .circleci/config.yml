@@ -19,6 +19,19 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - run: echo "text to output here" > output.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - target/application.jar
+            - build/*
+
+  print_output_file:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: cat output.txt
 
 workflows:
   # Name the workflow "welcome"
@@ -30,6 +43,9 @@ workflows:
       - save_hello_world_output:
           requires: 
             - print_project_owner
+      - print_output_file:
+          requires:
+            - save_hello_world_output
 
 
 
