@@ -2,10 +2,6 @@
 version: 2.1
 
 # command section
-commands:
-  print_pipeline_id:
-    steps:
-      - run: echo ${CIRCLE_WORKFLOW_ID}
 
 # Use a package of configuration called an orb.
 orbs:
@@ -14,12 +10,41 @@ orbs:
 
 # Orchestrate or schedule a set of jobs
 jobs:
+  build:
+    docker: 
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: npm i
+      - run: npm run lint
 
+  test:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: npm i
+      - run: npm run test
+
+  analyze:
+    docker: 
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: npm i
+      - run: npm audit
 
 
 workflows:
   webApp:
-    - welcome/run
+    jobs:
+      - build
+      - test:
+          requires: 
+            - build
+      - analyze:
+          requires:
+            - test  
 
 
 
