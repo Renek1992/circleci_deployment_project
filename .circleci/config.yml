@@ -44,6 +44,15 @@ jobs:
     steps:
       - print_pipeline_id
 
+  failure_job:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - run: 
+          command: return 1
+          when: on_fail
+
+
 workflows:
   # Name the workflow "welcome"
   welcome:
@@ -58,6 +67,7 @@ workflows:
           requires:
             - save_hello_world_output
       - print_command
+      - failure_job
 
 
 
